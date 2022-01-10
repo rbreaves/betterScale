@@ -20,6 +20,9 @@ cd betterScale
 ./setup.sh
 ```
 
+#### How to Uninstall
+For now the closest thing to removal is to simply re-run the setup and select option 10. That will set your native resolution and undo the experimental GDK scaling and xrandr scaling. You can manually remove the `/usr/share/X11/xorg.conf.d/20-intel.conf` file if you want, but if you are not using intel then it will not impact you either way. The file only exists to remove tearing (happens regardless of scaling) or mouse cursor flickering issues caused by scaling.
+
 ### TODO
 - [Support multi-monitor (already done but not scripted yet)](https://www.reddit.com/r/UsabilityPorn/comments/ryo099/1920x1080_monitor_w_2880x1800_macbook_perfectly/)
 - Support custom scale percentages &/or resolution destinations
