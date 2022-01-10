@@ -7,11 +7,11 @@ BetterScale uses a similar concept for scaling as macs do by enabling Gnomes exp
 
 **Macbook Pro Retina 2880x1800**
 
-<img src="https://i.imgur.com/Tsv3ril.jpeg" width="25%" height="25%">
+<img src="https://i.imgur.com/XRynAhY.jpg" width="25%" height="25%">
 
 **Standard HD Laptop 1920x1080**
 
-<img src="https://i.imgur.com/u1zuBli.jpg" width="75%" height="75%">
+<img src="https://i.imgur.com/IbUG1kX.jpg" width="75%" height="75%">
 
 
 ### betterScale v0.1
