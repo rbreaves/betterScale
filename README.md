@@ -1,5 +1,5 @@
 # betterScale
-Better Scale helps Gnome &amp; Budgie x11 users perfectly scale their desktop.
+Better Scale helps Gnome &amp; Budgie x11 users perfectly scale their desktop. This is something any HiDPI laptop, or even normal HD, user may want.
 
 Uses a similar concept as scaling on macs by enabling Gnomes experimental scaling support & increasing the graphics framebuffer. Then betterScale will scale the framebuffer back down using xrandr.
 
