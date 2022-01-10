@@ -16,7 +16,7 @@ cd betterScale
 ```
 
 ## TODO
-- Support multi-monitor (already done but not scripted yet)
+- [Support multi-monitor (already done but not scripted yet)](https://www.reddit.com/r/UsabilityPorn/comments/ryo099/1920x1080_monitor_w_2880x1800_macbook_perfectly/)
 - Support custom scale percentages &/or resolution destinations
 - Combine with xeventbind & systemd to daemonize betterScale (will prompt user to re-apply if set resolution ever changes)
 
