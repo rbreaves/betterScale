@@ -5,8 +5,14 @@ This is something any HiDPI laptop, or even normal HD, user may want as it will 
 
 BetterScale uses a similar concept for scaling as macs do by enabling Gnomes experimental scaling support & increasing the graphics framebuffer. Then betterScale will scale the framebuffer back down using xrandr.
 
-<img src="https://i.imgur.com/u1zuBli.jpg" width="75%" height="75%">
+**Macbook Pro Retina 2880x1800**
+
 <img src="https://i.imgur.com/Tsv3ril.jpeg" width="25%" height="25%">
+
+**Standard HD Laptop 1920x1080**
+
+<img src="https://i.imgur.com/u1zuBli.jpg" width="75%" height="75%">
+
 
 ### betterScale v0.1
 - Single monitor only
