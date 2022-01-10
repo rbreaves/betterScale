@@ -15,7 +15,7 @@ BetterScale uses a similar concept for scaling as macs do by enabling Gnomes exp
 
 
 ### betterScale v0.1
-- Single monitor only
+- Single monitor only ([next realize will support multi-monitors](https://www.reddit.com/r/UsabilityPorn/comments/ryo099/1920x1080_monitor_w_2880x1800_macbook_perfectly/))
 - Gnome & Budgie support only
 
 ### Instructions
