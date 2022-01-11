@@ -99,10 +99,10 @@ main() {
     res10_height=$(echo "${native[1]}*2" | bc)
 
 
-    resq1_width=$(echo "${native[0]}*1.25" | bc)
-    resq1_height=$(echo "${native[1]}*1.25" | bc)
-    resq3_width=$(echo "${native[0]}*1.75" | bc)
-    resq3_height=$(echo "${native[1]}*1.75" | bc)
+    res11_width=$(echo "${native[0]}*1.25" | bc)
+    res11_height=$(echo "${native[1]}*1.25" | bc)
+    res12_width=$(echo "${native[0]}*1.75" | bc)
+    res12_height=$(echo "${native[1]}*1.75" | bc)
 
     echo ""
     echo "% scale based on perception"
@@ -122,8 +122,8 @@ main() {
     echo ""
     echo "In between quarter scales"
     echo "-----------------"
-    echo "11: Scale 175%: "$((${resq1_width%.*}/2))"x"$((${resq1_height%.*}/2))
-    echo "12: Scale 125%: "$((${resq3_width%.*}/2))"x"$((${resq3_height%.*}/2))
+    echo "11: Scale 175%: "$((${res11_width%.*}/2))"x"$((${res11_height%.*}/2))
+    echo "12: Scale 125%: "$((${res12_width%.*}/2))"x"$((${res12_height%.*}/2))
     echo ""
     # echo "Scale 10%: "${res1_width}"x"${res1_height}
     # echo "Scale 120%: "${res2_width}"x"${res2_height}
