@@ -11,7 +11,7 @@ BetterScale uses a similar concept for scaling as macs do by enabling Gnomes exp
 
 **Standard HD Laptop 1920x1080**
 
-<img src="https://i.imgur.com/IbUG1kX.jpg" width="75%" height="75%">
+<img src="https://i.imgur.com/6gtKX3D.jpg" width="75%" height="75%">
 
 
 ### betterScale v0.1
