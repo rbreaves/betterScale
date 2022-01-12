@@ -34,6 +34,7 @@ For now the closest thing to removal is to simply re-run the setup and select op
 - Support custom scale percentages &/or resolution destinations
 - Combine with xeventbind & systemd to daemonize betterScale (will prompt user to re-apply if set resolution ever changes)
 - Ask user if resolution applied correctly, if not then fallback to previous setting
+- Possibly add a system tray similar to RDM for macs, SwitchResX, or Ultramon for changing scales or resolutions.
 
 
 ### Resources
