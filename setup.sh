@@ -40,6 +40,38 @@ fallback(){
     fi
 }
 
+listResolutions(){
+    echo "list resolutions"
+}
+
+biggest(){
+    # Read string into array
+    IFS=' ' read -r -a res_array <<< `echo "$1"`
+    res_len="${#res_array[@]}"
+
+    # Let's figure out the largest screen by getting the pixel count
+    full_size=()
+    for (( i=0; i<$res_len; i++ )); do
+        # echo "$i"
+        full_size[${#full_size[@]}]=$((res_array[$i]*res_array[$i+1]))
+        # full_size+=
+        i+=1
+    done
+
+    # Let's figure out the index location of the largest screen
+    max=${full_size[0]}
+    i=0
+    for n in "${full_size[@]}" ; do
+        ((n > max)) && (max=$n;i++)
+    done
+
+    # echo "${full_size[@]}"
+    # echo "${#full_size[@]}"
+    # printf '%s\n' "${full_size[@]}" | awk '$1 > m || NR == 1 { m = $1 } END { print m }'
+
+    native_index=$i
+}
+
 main() {
     echo "${BBLUE}betterScale v0.1${NC}"
     echo "----------------"
@@ -108,41 +140,124 @@ main() {
 
     # Grab all relevant information
     # xrandr | grep -w connected  | awk -F'[ \+]' '{print $1","$3","$4","$5","$6}'
-    IFS=',' read -r -a monitor_settings <<< `xrandr | grep -w connected  | awk -F'[ \+]' '{print $1","$3","$4","$5","$6}'`
+    monitors=($(xrandr | grep -w connected  | awk -F'[ \+]' '{print $1","$3","$4","$5","$6}'))
+    # echo "${monitors[1]}"
+    # echo "${#monitors[@]}"
+
+    len=${#monitors[@]}
+    
+    # declare associative array to act as 2D array
+    declare -A monitor_settings
+
+    for (( i=0; i<$len; i++ )); do
+        IFS=',' read -r -a settings <<< `echo "${monitors[$i]}" | awk -F'[ \+]' '{print $1","$2","$3","$4","$5}'`
+        monitor_settings[$i,0]=${settings[0]}
+        if [[ ${settings[1]} == "primary" ]];then
+            monitor_settings[$i,1]=${settings[1]}
+            monitor_settings[$i,2]=${settings[2]}
+            monitor_settings[$i,3]=${settings[3]}
+            monitor_settings[$i,4]=${settings[4]}
+        else
+            monitor_settings[$i,1]=`echo $((i+1))`
+            monitor_settings[$i,2]=${settings[1]}
+            monitor_settings[$i,3]=${settings[2]}
+            monitor_settings[$i,4]=${settings[3]}
+        fi
+    done
+
+    if [[ $len -gt 1 ]] && [[ $len -lt 3 ]]; then
+        echo ""
+        echo "${len} monitors detected."
+        echo ""
+        question="Do you have your monitors [H]orizontal or [V]ertical?"
+        choices=(*horizontal vertical)
+        response=$(prompt "$question" $choices)
+        if [ "$response" == "h" ];then
+            echo "You chose to have horizontal monitors."
+        else
+            echo "You chose to have vertical monitors."
+        fi
+    elif [[ $len -gt 2 ]]; then
+        echo ""
+        echo "You have $len monitors."
+        question="Do you plan to set these up in a [G]rid, [H]orizontal or [V]ertical?"
+        choices=(*grid, horizontal vertical)
+        response=$(prompt "$question" $choices)
+        if [ "$response" == "g" ];then
+            echo "Grid is not yet support."
+            exit 0
+        elif [ "$response" == "h" ];then
+            echo "You chose to have horizontal monitors."
+        else
+            echo "You chose to have vertical monitors."
+        fi
+
+    fi
+
+    IFS='x' read -r -a native_temp <<< `xrandr --current | grep '*' | uniq | awk '{print $1}' | tr '\n' ' '`
+    native="${native_temp[*]}"
+    biggest "$native"
+    # echo "$native_index"
+
+    natives=($(xrandr --current | grep '*' | uniq | awk '{print $1}'))
+
+    echo ""
+    echo -e "Largest monitor detected.\n\nTo scale properly we will have you scale based on your largest screen.\n"
+    echo -e "${monitor_settings[$native_index,0]} ${natives[$native_index]}\n\n"
+
+    IFS='x' read -r -a native_res <<< "${natives[$native_index]}"
+
+    # echo "${native_res[@]}"
+
+    # declare -A native_monitor
+
+    # for (( i=0; i<$len; i++ )); do
+    #     IFS='x' read -r -a native_temp <<< `echo "${natives[$i]}" | awk '{print $1}'`
+    #     native_monitor[$i,0]=${native_temp[0]}
+    #     native_monitor[$i,1]=${native_temp[1]}
+    #     native_monitor[$i,2]=$((native_temp[0]*native_temp[1]))
+    # done
+    # echo "${monitor_settings[*]}"
+    # echo "${native_monitor[*]}"
+
+
+    # exit 0
+
+    # IFS=',' read -r -a monitor_settings <<< `xrandr | grep -w connected  | awk -F'[ \+]' '{print $1","$3","$4","$5","$6}'`
     # echo "${monitor_settings[@]}"
     # Grab native screen resolution
     # xrandr --current | grep '*' | uniq | awk '{print $1}'
 
-    IFS='x' read -r -a native <<< `xrandr --current | grep '*' | uniq | awk '{print $1}'`
+    # IFS='x' read -r -a native <<< `xrandr --current | grep '*' | uniq | awk '{print $1}'`
 
-    res0_width=$(echo "${native[0]}")
-    res0_height=$(echo "${native[1]}")
-    res1_width=$(echo "${native[0]}*1.1" | bc)
-    res1_height=$(echo "${native[1]}*1.1" | bc)
-    res2_width=$(echo "${native[0]}*1.2" | bc)
-    res2_height=$(echo "${native[1]}*1.2" | bc)
-    res3_width=$(echo "${native[0]}*1.3" | bc)
-    res3_height=$(echo "${native[1]}*1.3" | bc)
-    res4_width=$(echo "${native[0]}*1.4" | bc)
-    res4_height=$(echo "${native[1]}*1.4" | bc)
-    res5_width=$(echo "${native[0]}*1.5" | bc)
-    res5_height=$(echo "${native[1]}*1.5" | bc)
-    res6_width=$(echo "${native[0]}*1.6" | bc)
-    res6_height=$(echo "${native[1]}*1.6" | bc)
-    res7_width=$(echo "${native[0]}*1.7" | bc)
-    res7_height=$(echo "${native[1]}*1.7" | bc)
-    res8_width=$(echo "${native[0]}*1.8" | bc)
-    res8_height=$(echo "${native[1]}*1.8" | bc)
-    res9_width=$(echo "${native[0]}*1.9" | bc)
-    res9_height=$(echo "${native[1]}*1.9" | bc)
-    res10_width=$(echo "${native[0]}*2" | bc)
-    res10_height=$(echo "${native[1]}*2" | bc)
+    res0_width=$(echo "${native_res[0]}")
+    res0_height=$(echo "${native_res[1]}")
+    res1_width=$(echo "${native_res[0]}*1.1" | bc)
+    res1_height=$(echo "${native_res[1]}*1.1" | bc)
+    res2_width=$(echo "${native_res[0]}*1.2" | bc)
+    res2_height=$(echo "${native_res[1]}*1.2" | bc)
+    res3_width=$(echo "${native_res[0]}*1.3" | bc)
+    res3_height=$(echo "${native_res[1]}*1.3" | bc)
+    res4_width=$(echo "${native_res[0]}*1.4" | bc)
+    res4_height=$(echo "${native_res[1]}*1.4" | bc)
+    res5_width=$(echo "${native_res[0]}*1.5" | bc)
+    res5_height=$(echo "${native_res[1]}*1.5" | bc)
+    res6_width=$(echo "${native_res[0]}*1.6" | bc)
+    res6_height=$(echo "${native_res[1]}*1.6" | bc)
+    res7_width=$(echo "${native_res[0]}*1.7" | bc)
+    res7_height=$(echo "${native_res[1]}*1.7" | bc)
+    res8_width=$(echo "${native_res[0]}*1.8" | bc)
+    res8_height=$(echo "${native_res[1]}*1.8" | bc)
+    res9_width=$(echo "${native_res[0]}*1.9" | bc)
+    res9_height=$(echo "${native_res[1]}*1.9" | bc)
+    res10_width=$(echo "${native_res[0]}*2" | bc)
+    res10_height=$(echo "${native_res[1]}*2" | bc)
 
 
-    res11_width=$(echo "${native[0]}*1.25" | bc)
-    res11_height=$(echo "${native[1]}*1.25" | bc)
-    res12_width=$(echo "${native[0]}*1.75" | bc)
-    res12_height=$(echo "${native[1]}*1.75" | bc)
+    res11_width=$(echo "${native_res[0]}*1.25" | bc)
+    res11_height=$(echo "${native_res[1]}*1.25" | bc)
+    res12_width=$(echo "${native_res[0]}*1.75" | bc)
+    res12_height=$(echo "${native_res[1]}*1.75" | bc)
 
     echo ""
     echo "% scale based on perception"
@@ -209,73 +324,73 @@ main() {
         newRes=$((${res0_width%.*}/2))"x"$((${res0_height%.*}/2))
         echo "Applying 200%: $newRes"
         echo "xrandr --fb "$((${res0_width%.*}))"x"$((${res0_height%.*}))" --output ${monitor_settings[0]} --scale 1x1 --pos 0x0"
-        xrandr --fb "$((${res0_width%.*}))"x"$((${res0_height%.*}))" --output "${monitor_settings[0]}" --scale 1x1 --pos 0x0
+        # xrandr --fb "$((${res0_width%.*}))"x"$((${res0_height%.*}))" --output "${monitor_settings[0]}" --scale 1x1 --pos 0x0
         ;;
     1)
         newRes=$((${res1_width%.*}/2))"x"$((${res1_height%.*}/2))
         echo "Applying 190%: $newRes"
         echo "xrandr --fb "$((${res1_width%.*}))"x"$((${res1_height%.*}))" --output ${monitor_settings[0]} --scale 1.1x1.1 --pos 0x0"
-        xrandr --fb "$((${res1_width%.*}))"x"$((${res1_height%.*}))" --output "${monitor_settings[0]}" --scale 1.1x1.1 --pos 0x0
+        # xrandr --fb "$((${res1_width%.*}))"x"$((${res1_height%.*}))" --output "${monitor_settings[0]}" --scale 1.1x1.1 --pos 0x0
         ;;
     2)
         newRes=$((${res2_width%.*}/2))"x"$((${res2_height%.*}/2))
         echo "Applying 180%: $newRes"
         echo "xrandr --fb "$((${res2_width%.*}))"x"$((${res2_height%.*}))" --output ${monitor_settings[0]} --scale 1.2x1.2 --pos 0x0"
-        xrandr --fb "$((${res2_width%.*}))"x"$((${res2_height%.*}))" --output "${monitor_settings[0]}" --scale 1.2x1.2 --pos 0x0
+        # xrandr --fb "$((${res2_width%.*}))"x"$((${res2_height%.*}))" --output "${monitor_settings[0]}" --scale 1.2x1.2 --pos 0x0
         ;;
     3)
         newRes=$((${res3_width%.*}/2))"x"$((${res3_height%.*}/2))
         echo "Applying 170%: $newRes"
         echo "xrandr --fb "$((${res3_width%.*}))"x"$((${res3_height%.*}))" --output ${monitor_settings[0]} --scale 1.3x1.3 --pos 0x0"
-        xrandr --fb "$((${res3_width%.*}))"x"$((${res3_height%.*}))" --output "${monitor_settings[0]}" --scale 1.3x1.3 --pos 0x0
+        # xrandr --fb "$((${res3_width%.*}))"x"$((${res3_height%.*}))" --output "${monitor_settings[0]}" --scale 1.3x1.3 --pos 0x0
         ;;
     4)
         newRes=$((${res4_width%.*}/2))"x"$((${res4_height%.*}/2))
         echo "Applying 160%: $newRes"
         echo "xrandr --fb "$((${res4_width%.*}))"x"$((${res4_height%.*}))" --output ${monitor_settings[0]} --scale 1.4x1.4 --pos 0x0"
-        xrandr --fb "$((${res4_width%.*}))"x"$((${res4_height%.*}))" --output "${monitor_settings[0]}" --scale 1.4x1.4 --pos 0x0
+        # xrandr --fb "$((${res4_width%.*}))"x"$((${res4_height%.*}))" --output "${monitor_settings[0]}" --scale 1.4x1.4 --pos 0x0
         ;;
     5)
         newRes=$((${res5_width%.*}/2))"x"$((${res5_height%.*}/2))
         echo "Applying 150%: $newRes"
         echo "xrandr --fb "$((${res5_width%.*}))"x"$((${res5_height%.*}))" --output ${monitor_settings[0]} --scale 1.5x1.5 --pos 0x0"
-        xrandr --fb "$((${res5_width%.*}))"x"$((${res5_height%.*}))" --output "${monitor_settings[0]}" --scale 1.5x1.5 --pos 0x0
+        # xrandr --fb "$((${res5_width%.*}))"x"$((${res5_height%.*}))" --output "${monitor_settings[0]}" --scale 1.5x1.5 --pos 0x0
         ;;
     6)
         newRes=$((${res6_width%.*}/2))"x"$((${res6_height%.*}/2))
         echo "Applying 140%: $newRes"
         echo "xrandr --fb "$((${res6_width%.*}))"x"$((${res6_height%.*}))" --output ${monitor_settings[0]} --scale 1.6x1.6 --pos 0x0"
-        xrandr --fb "$((${res6_width%.*}))"x"$((${res6_height%.*}))" --output "${monitor_settings[0]}" --scale 1.6x1.6 --pos 0x0
+        # xrandr --fb "$((${res6_width%.*}))"x"$((${res6_height%.*}))" --output "${monitor_settings[0]}" --scale 1.6x1.6 --pos 0x0
         ;;
     7)
         newRes=$((${res7_width%.*}/2))"x"$((${res7_height%.*}/2))
         echo "Applying 130%: $newRes"
         echo "xrandr --fb "$((${res7_width%.*}))"x"$((${res7_height%.*}))" --output ${monitor_settings[0]} --scale 1.7x1.7 --pos 0x0"
-        xrandr --fb "$((${res7_width%.*}))"x"$((${res7_height%.*}))" --output "${monitor_settings[0]}" --scale 1.7x1.7 --pos 0x0
+        # xrandr --fb "$((${res7_width%.*}))"x"$((${res7_height%.*}))" --output "${monitor_settings[0]}" --scale 1.7x1.7 --pos 0x0
         ;;
     8)
         newRes=$((${res8_width%.*}/2))"x"$((${res8_height%.*}/2))
         echo "Applying 120%: $newRes"
         echo "xrandr --fb "$((${res8_width%.*}))"x"$((${res8_height%.*}))" --output ${monitor_settings[0]} --scale 1.8x1.8 --pos 0x0"
-        xrandr --fb "$((${res8_width%.*}))"x"$((${res8_height%.*}))" --output "${monitor_settings[0]}" --scale 1.8x1.8 --pos 0x0
+        # xrandr --fb "$((${res8_width%.*}))"x"$((${res8_height%.*}))" --output "${monitor_settings[0]}" --scale 1.8x1.8 --pos 0x0
         ;;
     9)
         newRes=$((${res9_width%.*}/2))"x"$((${res9_height%.*}/2))
         echo "Applying 110%: $newRes"
         echo "xrandr --fb "$((${res9_width%.*}))"x"$((${res9_height%.*}))" --output ${monitor_settings[0]} --scale 1.9x1.9 --pos 0x0"
-        xrandr --fb "$((${res9_width%.*}))"x"$((${res9_height%.*}))" --output "${monitor_settings[0]}" --scale 1.9x1.9 --pos 0x0
+        # xrandr --fb "$((${res9_width%.*}))"x"$((${res9_height%.*}))" --output "${monitor_settings[0]}" --scale 1.9x1.9 --pos 0x0
         ;;
     11)
         newRes=$((${res11_width%.*}/2))"x"$((${res11_height%.*}/2))
         echo "Applying 175%: $newRes"
         echo "xrandr --fb "$((${res11_width%.*}))"x"$((${res11_height%.*}))" --output ${monitor_settings[0]} --scale 1.25x1.25 --pos 0x0"
-        xrandr --fb "$((${res11_width%.*}))"x"$((${res11_height%.*}))" --output "${monitor_settings[0]}" --scale 1.25x1.25 --pos 0x0
+        # xrandr --fb "$((${res11_width%.*}))"x"$((${res11_height%.*}))" --output "${monitor_settings[0]}" --scale 1.25x1.25 --pos 0x0
         ;;
     12)
         newRes=$((${res12_width%.*}/2))"x"$((${res12_height%.*}/2))
         echo "Applying 125%: $newRes"
         echo "xrandr --fb "$((${res12_width%.*}))"x"$((${res12_height%.*}))" --output ${monitor_settings[0]} --scale 1.75x1.75 --pos 0x0"
-        xrandr --fb "$((${res12_width%.*}))"x"$((${res12_height%.*}))" --output "${monitor_settings[0]}" --scale 1.75x1.75 --pos 0x0
+        # xrandr --fb "$((${res12_width%.*}))"x"$((${res12_height%.*}))" --output "${monitor_settings[0]}" --scale 1.75x1.75 --pos 0x0
         ;;
     *)
         echo "unknown"
@@ -285,7 +400,7 @@ main() {
     # Add in confirmation that user screen resolution has been changed
     # If no confirmation and recieved back to a gxmessage prompt then revert user back to original sreen resolution.
     # The assumption will be that it failed to work.
-    save
+    # save
 }
 
 source ./functions/prompt.sh
