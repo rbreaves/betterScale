@@ -32,7 +32,8 @@ For now the closest thing to removal is to simply re-run the setup and select op
 ### TODO
 - [Support multi-monitor (already done but not scripted yet)](https://www.reddit.com/r/UsabilityPorn/comments/ryo099/1920x1080_monitor_w_2880x1800_macbook_perfectly/)
 - Support custom scale percentages &/or resolution destinations
-- Combine with xeventbind & systemd to daemonize betterScale (will prompt user to re-apply if set resolution ever changes)
+- ~Combine with xeventbind & systemd to daemonize betterScale (will prompt user to re-apply if set resolution ever changes)~
+- autorandr has a systemd service already that can re-apply a default profile on lid open status
 - Ask user if resolution applied correctly, if not then fallback to previous setting
 - Possibly add a system tray similar to RDM for macs, SwitchResX, or Ultramon for changing scales or resolutions.
 
