@@ -165,10 +165,13 @@ main() {
     echo "${YELLOW}11:${NC} Scale 175%: ${GREEN}"$((${res11_width%.*}/2))"x"$((${res11_height%.*}/2))"${NC}"
     echo "${YELLOW}12:${NC} Scale 125%: ${GREEN}"$((${res12_width%.*}/2))"x"$((${res12_height%.*}/2))"${NC}"
     echo ""
+    echo "Exit"
+    echo "-----"
+    echo "13 or Q"
     # echo "Scale 10%: "${res1_width}"x"${res1_height}
     # echo "Scale 120%: "${res2_width}"x"${res2_height}
 
-    echo -n "${YELLOW}Please select an option [0-12]:${NC} "
+    echo -n "${YELLOW}Please select an option [0-13]:${NC} "
     read resolution
 
     # Check these and apply if needed
@@ -276,6 +279,15 @@ main() {
         echo "Applying 125%: $newRes"
         echo "xrandr --fb "$((${res12_width%.*}))"x"$((${res12_height%.*}))" --output ${monitor_settings[0]} --scale 1.75x1.75 --pos 0x0"
         xrandr --fb "$((${res12_width%.*}))"x"$((${res12_height%.*}))" --output "${monitor_settings[0]}" --scale 1.75x1.75 --pos 0x0
+        ;;
+    13)
+        exit 0
+        ;;
+    q)
+        exit 0
+        ;;
+    Q)
+        exit 0
         ;;
     *)
         echo "unknown"
