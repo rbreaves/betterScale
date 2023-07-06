@@ -198,8 +198,8 @@ main() {
         gsettings get org.gnome.settings-daemon.plugins.xsettings overrides | grep -q "'Gdk/WindowScalingFactor': <2>"
         if [ $? -eq 0 ]; then
             echo "Removing experimental GDK WindowScalingFactor 2..."
-            gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <1>}]"
-            gsettings set org.gnome.desktop.interface scaling-factor 1
+            gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "@a{sv} {}"
+            gsettings set org.gnome.desktop.interface scaling-factor 0
             echo "Applying 100%: "$((${res10_width%.*}/2))"x"$((${res10_height%.*}/2))
             echo "Removed experimental GDK scaling, no xrandr scaling needed."
             echo "Please logoff and back on."
